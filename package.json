@@ -1,15 +1,56 @@
 {
-  "name": "elysia-jwt",
-  "version": "1.0.50",
+  "name": "@pichxyaponn/elysia-jwt",
+  "description": "Plugin for Elysia for using JWT Authentication",
+  "version": "1.0.0",
+  "author": {
+    "name": "pichxyaponn",
+    "url": "https://github.com/pichxyaponn",
+    "email": "pichxyaponn@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pichxyaponn/elysia-jwt"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "bugs": "https://github.com/pichxyaponn/elysia-jwt/issues",
+  "homepage": "https://github.com/pichxyaponn/elysia-jwt",
+  "keywords": [
+    "elysia",
+    "jwt",
+    "auth",
+    "authentication"
+  ],
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --hot example/index.ts",
+    "test": "bun test && npm run test:node",
+    "test:node": "npm install --prefix ./test/node/cjs/ && npm install --prefix ./test/node/esm/ && node ./test/node/cjs/index.js && node ./test/node/esm/index.js",
+    "build": "bun build.ts",
+    "release": "npm run build && npm run test && npm publish --access public"
   },
   "dependencies": {
-    "elysia": "latest"
+    "jose": "^6.0.11"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "@types/bun": "1.2.15",
+    "@typescript-eslint/eslint-plugin": "^8.33.0",
+    "@typescript-eslint/parser": "^8.33.0",
+    "elysia": "^1.3.3",
+    "eslint": "9.27.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
   },
-  "module": "src/index.js"
+  "peerDependencies": {
+    "elysia": ">= 1.3.0"
+  }
 }
