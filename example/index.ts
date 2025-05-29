@@ -5,7 +5,7 @@ const app = new Elysia()
   .use(
     jwt({
       name: "jwt",
-      secret: "aawdaowdoj",
+      secret: new TextEncoder().encode("secret"),
       sub: "auth",
       iss: "pichxyaponn",
       exp: "30d",
@@ -28,13 +28,22 @@ const app = new Elysia()
     return `Sign in as ${auth.value}`;
   })
   .get("/profile", async ({ jwt, set, cookie: { auth } }) => {
-    const profile = await jwt.verify(auth.value);
+    try {
+      const profile = await jwt.verify(auth.value);
 
-    if (!profile) {
-      set.status = 401;
-      return "Unauthorized";
+      if (!profile) {
+        set.status = 401;
+        return "Unauthorized";
+      }
+
+      return `Hello ${profile.name}`;
+    } catch (error: any) {
+      switch (error.code) {
+        case "ERR_JWT_EXPIRED":
+          throw error;
+        default:
+          return false;
+      }
     }
-
-    return `Hello ${profile.name}`;
   })
   .listen(8080);

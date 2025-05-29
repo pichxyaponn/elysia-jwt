@@ -20,7 +20,7 @@ describe("Static Plugin", () => {
     .use(
       jwt({
         name: "jwt",
-        secret: TEST_SECRET,
+        secret: new TextEncoder().encode(TEST_SECRET),
         exp: "1h" // default expiration
       })
     )
@@ -40,15 +40,24 @@ describe("Static Plugin", () => {
     .post(
       "/verify-token",
       async ({ jwt, body }) => {
-        const verifiedPayload = await jwt.verify(body.token);
-        if (!verifiedPayload) {
+        try {
+          const verifiedPayload = await jwt.verify(body.token);
+
+          if (!verifiedPayload) {
+            return {
+              success: false,
+              data: null,
+              message: "Verification failed"
+            };
+          }
+          return { success: true, data: verifiedPayload };
+        } catch (error: any) {
           return {
             success: false,
             data: null,
-            message: "Verification failed"
+            message: "Expired token"
           };
         }
-        return { success: true, data: verifiedPayload };
       },
       {
         body: t.Object({ token: t.String() })
@@ -99,6 +108,6 @@ describe("Static Plugin", () => {
     const verifiedResult = await verifyResponse.json();
 
     expect(verifiedResult.success).toBe(false);
-    expect(verifiedResult.message).toBe("Verification failed");
+    expect(verifiedResult.message).toBe("Expired token");
   });
 });

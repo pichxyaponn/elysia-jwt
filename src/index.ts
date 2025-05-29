@@ -55,7 +55,7 @@ export interface JWTOption<
   /**
    * JWT Secret
    */
-  secret: string | Uint8Array | CryptoKey | JWK | KeyObject;
+  secret: Uint8Array | CryptoKey | JWK | KeyObject;
   /**
    * Type strict validation for JWT payload
    */
@@ -169,14 +169,19 @@ JWTOption<Name, Schema>) => {
       if (!jwt) return false;
 
       try {
-        const data: any = (await jwtVerify(jwt, key)).payload;
+        const payload: any = (await jwtVerify(jwt, key)).payload;
 
-        if (validator && !validator!.Check(data))
-          throw new ValidationError("JWT", validator, data);
+        if (validator && !validator!.Check(payload))
+          throw new ValidationError("JWT", validator, payload);
 
-        return data;
-      } catch (_) {
-        return false;
+        return payload;
+      } catch (error: any) {
+        switch (error.code) {
+          case "ERR_JWT_EXPIRED":
+            throw error;
+          default:
+            return false;
+        }
       }
     }
   });
