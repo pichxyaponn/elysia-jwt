@@ -19,7 +19,7 @@ const app = new Elysia()
   .use(
     jwt({
       name: "jwt",
-      secret: "aawdaowdoj",
+      secret: new TextEncoder().encode("secret"),
       sub: "auth",
       iss: "pichxyaponn",
       exp: "30d",
